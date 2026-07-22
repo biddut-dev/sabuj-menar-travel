@@ -17,6 +17,10 @@
   ],
   "author": "Antigravity",
   "license": "ISC",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
