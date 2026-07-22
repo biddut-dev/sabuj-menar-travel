@@ -34,7 +34,11 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// Start server
-app.listen(port, () => {
-  console.log(`Sabuj Menar API Server is running on port ${port}`);
-});
+// Start server if not on Vercel
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Sabuj Menar API Server is running on port ${port}`);
+  });
+}
+
+export default app;
