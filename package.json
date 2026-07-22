@@ -8,7 +8,8 @@
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "build:all": "npm run build --prefix backend && npm run build --prefix frontend",
     "db:seed": "npm run db:seed --prefix backend",
-    "db:migrate": "npm run db:migrate --prefix backend"
+    "db:migrate": "npm run db:migrate --prefix backend",
+    "postinstall": "prisma generate --schema=backend/prisma/schema.prisma"
   },
   "keywords": [
     "hajj",
@@ -22,6 +23,7 @@
     "backend"
   ],
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "prisma": "^5.10.2"
   }
 }
