@@ -1,0 +1,215 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+enum PackageType {
+  HAJJ
+  UMRAH
+}
+
+enum PackageCategory {
+  ECONOMY
+  STANDARD
+  PREMIUM
+  VIP
+}
+
+enum RequestStatus {
+  PENDING
+  CONTACTED
+  CONFIRMED
+  COMPLETED
+}
+
+enum MessageStatus {
+  PENDING
+  READ
+  REPLIED
+}
+
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  password         String
+  name             String
+  role             Role             @default(STAFF)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  bookingRequests  BookingRequest[] @relation("AssignedStaff")
+}
+
+model Package {
+  id                  String          @id @default(uuid())
+  title               String
+  titleEn             String
+  slug                String          @unique
+  description         String
+  descriptionEn       String
+  type                PackageType     @default(UMRAH)
+  category            PackageCategory @default(STANDARD)
+  durationDays        Int
+  price               Float
+  hotelDetailsMakkah  String
+  hotelDetailsMakkahEn String
+  hotelDetailsMadinah String
+  hotelDetailsMadinahEn String
+  departureDate       DateTime
+  mealsIncluded       Boolean         @default(true)
+  visaIncluded        Boolean         @default(true)
+  flightIncluded      Boolean         @default(true)
+  guideIncluded       Boolean         @default(true)
+  ziyaratIncluded     Boolean         @default(true)
+  highlights          String[]
+  highlightsEn        String[]
+  isPublished         Boolean         @default(true)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  bookings            BookingRequest[]
+}
+
+model BookingRequest {
+  id                 String        @id @default(uuid())
+  fullName           String
+  phone              String
+  email              String
+  passportNumber     String?
+  nationality        String
+  numTravelers       Int           @default(1)
+  packageType        PackageType
+  preferredMonth     String
+  notes              String?
+  status             RequestStatus @default(PENDING)
+  assignedStaffId    String?
+  assignedStaff      User?         @relation("AssignedStaff", fields: [assignedStaffId], references: [id])
+  packageId          String?
+  package            Package?      @relation(fields: [packageId], references: [id])
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+}
+
+model GalleryItem {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  caption   String
+  category  String   // KAABA, HARAM, NABAWI, PILGRIMS, TOURS, ORIENTATION, DEPARTURE, CUSTOMERS
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  name      String
+  nameEn    String?
+  city      String
+  cityEn    String?
+  rating    Int      @default(5)
+  review    String   @db.Text
+  reviewEn  String   @db.Text
+  imageUrl  String?
+  createdAt DateTime @default(now())
+}
+
+model BlogPost {
+  id          String   @id @default(uuid())
+  title       String
+  titleEn     String
+  slug        String   @unique
+  content     String   @db.Text
+  contentEn   String   @db.Text
+  summary     String
+  summaryEn   String
+  imageUrl    String
+  category    String   // Hajj Guide, Umrah Checklist, Travel Tips, Packing Guide, Religious Preparation
+  author      String
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id              String        @id @default(uuid())
+  name            String
+  phone           String
+  email           String
+  packageInterest String
+  preferredMonth  String
+  message         String
+  status          MessageStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  name      String
+  nameEn    String?
+  role      String
+  roleEn    String?
+  imageUrl  String?
+  phone     String?
+  email     String?
+  bio       String?  @db.Text
+  bioEn     String?  @db.Text
+  createdAt DateTime @default(now())
+}
+
+model FAQ {
+  id        String   @id @default(uuid())
+  question  String
+  questionEn String
+  answer    String   @db.Text
+  answerEn  String   @db.Text
+  category  String   // General, Packages, Requirements, Support
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model HomepageContent {
+  id                 String   @id @default(uuid())
+  heroTitle          String   @default("আপনার হজ্জ ও ওমরার বিশ্বস্ত সঙ্গী")
+  heroTitleEn        String   @default("Your Trusted Companion for Hajj & Umrah")
+  heroSubtitle       String   @default("সবুজ মিনার ট্রাভেল এজেন্সির মাধ্যমে আরামদায়ক, নিরাপদ এবং পূর্ণাঙ্গ নির্দেশনার সাথে আপনার পবিত্র যাত্রা সম্পন্ন করুন।")
+  heroSubtitleEn      String   @default("Perform your sacred journey with comfort, confidence, and complete guidance through Sabuj Menar Travel Agency.")
+  experienceYears    Int      @default(10)
+  happyPilgrims      Int      @default(5000)
+  guidanceRate       Int      @default(100)
+  supportHours       String   @default("24/7")
+  aboutStory         String   @db.Text
+  aboutStoryEn       String   @db.Text
+  aboutMission       String   @db.Text
+  aboutMissionEn     String   @db.Text
+  aboutVision        String   @db.Text
+  aboutVisionEn      String   @db.Text
+  govtRegistrationText String   @default("ধর্ম বিষয়ক মন্ত্রণালয় অনুমোদিত (হজ্জ লাইসেন্স নং ০৮১৬)")
+  govtRegistrationTextEn String @default("Approved by Ministry of Religious Affairs (Hajj License No. 0816)")
+  updatedAt          DateTime @updatedAt
+}
+
+model WebsiteSettings {
+  id                String   @id @default(uuid())
+  officeAddress     String   @default("রুম নং ৪০২, ৪র্থ তলা, পল্টন টাওয়ার, পুরানা পল্টন, ঢাকা-১০০০, বাংলাদেশ")
+  officeAddressEn   String   @default("Room No. 402, 4th Floor, Paltan Tower, Purana Paltan, Dhaka-1000, Bangladesh")
+  googleMapEmbedUrl String   @default("https://www.google.com/maps/embed?pb=...")
+  phone1            String   @default("+880 1711 123456")
+  phone2            String?
+  whatsappNumber    String   @default("+8801711123456")
+  emailAddress      String   @default("info@sabujmenar.com")
+  businessHours     String   @default("শনিবার - বৃহস্পতিবার: সকাল ৯:০০ - রাত ৮:০০ (শুক্রবার বন্ধ)")
+  businessHoursEn   String   @default("Saturday - Thursday: 9:00 AM - 8:00 PM (Friday Closed)")
+  facebookUrl       String?
+  twitterUrl        String?
+  instagramUrl      String?
+  youtubeUrl        String?
+  seoTitle          String   @default("সবুজ মিনার ট্রাভেল এজেন্সি | হজ্জ ও ওমরার বিশ্বস্ত সঙ্গী")
+  seoDescription    String   @default("সবুজ মিনার ট্রাভেল এজেন্সির মাধ্যমে আরামদায়ক, নিরাপদ এবং পূর্ণাঙ্গ নির্দেশনার সাথে আপনার পবিত্র যাত্রা সম্পন্ন করুন।")
+  logoUrl           String?
+  updatedAt         DateTime @updatedAt
+}

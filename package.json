@@ -1,0 +1,23 @@
+{
+  "name": "sabuj-menar-travel-agency-root",
+  "version": "1.0.0",
+  "description": "Root configuration for Sabuj Menar Travel Agency web app",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "build:all": "npm run build --prefix backend && npm run build --prefix frontend",
+    "db:seed": "npm run db:seed --prefix backend",
+    "db:migrate": "npm run db:migrate --prefix backend"
+  },
+  "keywords": [
+    "hajj",
+    "umrah",
+    "travel-agency"
+  ],
+  "author": "Antigravity",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
